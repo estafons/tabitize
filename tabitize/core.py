@@ -1,4 +1,5 @@
-from models import Octave, Pitch, Accidental
+from xmlrpc.client import Boolean
+from tabitize.models import Octave, Pitch, Accidental
 from typing import List, Sequence
 from copy import deepcopy
 
@@ -12,6 +13,14 @@ class Note():
         self.pitch = pitch
         self.octave = octave
         self.accidental = accidental
+
+    def __eq__(self, other) -> Boolean:
+        if self.pitch == other.pitch and\
+            self.octave == other.octave and\
+                self.accidental == other.accidental:
+            return True
+        else:
+            return False
 
     @property
     def pitch(self):
@@ -48,34 +57,38 @@ class Note():
 class Tab():
     """a tablature class"""
 
+    def __eq__(self, other) -> Boolean:
+        for (notes, noteo) in zip(self.tab, other.tab):
+            if notes != noteo:
+                return False
+        return True 
+
     @property
     def tab(self) -> List:
         return self.__tab
 
     @tab.setter
     def tab(self, tab: List[Note]) -> None:
-        print("this is tab.setter")
         self.__tab = deepcopy(tab)
 
+
+
+            
+
 class TabFromListList(Tab):
-    """subclass working as an interface to read notes from list of lists"""
-
     def __init__(self, ListList : Sequence[Sequence[str]]) -> object: 
+        """class method working as an interface to read notes from list of lists"""
         self.tab = [Note(Pitch(x[0]), Octave(x[1]), Accidental(x[2])) for x in ListList]
-    
 
 
-x = Note(Pitch('C'), Octave('one'), Accidental('perfect'))
-print((x.pitch))
-
-t = TabFromListList([('C', 'one', 'perfect'),[Pitch('D'), Octave('two'), Accidental('perfect')]])
-t = TabFromListList([(Pitch('C'), Octave('one'), Accidental('perfect')),(Pitch('D'), Octave('two'), Accidental('perfect'))])
-
-print(t)
-# t = Tab()
-# t.tab = [x, x]
-for n in t.tab:
-    print(n.pitch)
+# x = Note(Pitch('C'), Octave('one'), Accidental('perfect'))
+# print((x.pitch))
 
 
-"this is a test"
+# # t = Tab()
+# # t.tab = [x, x]
+# for n in t.tab:
+#     print(n.pitch)
+
+
+# "this is a test"
